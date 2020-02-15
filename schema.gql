@@ -1,0 +1,108 @@
+#import "./type/Batch.gql"
+#import "./type/BatchInput.gql"
+#import "./type/Order.gql"
+#import "./type/PostProduction.gql"
+#import "./type/AssemblyOptions.gql"
+#import "./type/SortingElementEnum.gql"
+#import "./type/OrderInput.gql"
+#import "./type/Article.gql"
+#import "./type/Edge.gql"
+#import "./type/FittingStatus.gql"
+#import "./type/EdgeEnum.gql"
+#import "./type/EdgePosition.gql"
+#import "./type/EdgeProperties.gql"
+#import "./type/EdgeSequence.gql"
+#import "./type/EdgeSequenceEnum.gql"
+#import "./type/Group.gql"
+#import "./type/Grouping.gql"
+#import "./type/GroupType.gql"
+#import "./type/GroupInput.gql"
+#import "./type/Machine.gql"
+#import "./type/MachiningEnum.gql"
+#import "./type/Manipulation.gql"
+#import "./type/Operation.gql"
+#import "./type/OverstepEnum.gql"
+#import "./type/Panel.gql"
+#import "./type/PanelProperties.gql"
+#import "./type/Part.gql"
+#import "./type/PartInfo.gql"
+#import "./type/PartTyp.gql"
+#import "./type/ProdCode.gql"
+#import "./type/ProfilePurchasedPart.gql"
+#import "./type/PurchasedPart.gql"
+#import "./type/Box.gql"
+#import "./type/BoxInput.gql"
+#import "./type/FittingBoxInput.gql"
+#import "./type/SummedFittingInput.gql"
+#import "./type/VectorInput.gql"
+#import "./type/FittingBox.gql"
+#import "./type/SurfaceSequenceEnum.gql"
+#import "./type/TextureEnum.gql"
+#import "./type/ToolEnum.gql"
+#import "./type/MachineNameEnum.gql"
+#import "./type/Vector.gql"
+#import "./type/Status.gql"
+#import "./type/BatchPath.gql"
+#import "./type/SortingPosition.gql"
+#import "./type/SortingPositionInput.gql"
+#import "./type/Error.gql"
+#import "./type/User.gql"
+#import "./type/UserInput.gql"
+#import "./type/Application.gql"
+#import "./type/ApplicationInput.gql"
+#import "./type/Applet.gql"
+#import "./type/AppletInput.gql"
+#import "./type/Reservee.gql"
+#import "./type/ReserveeInput.gql"
+
+type Query {
+  batches (status: Status): [Batch]
+  batch (id: ID!): Batch
+  order (id: ID, orderId: ID): Order
+  orders: [Order]
+  user (username: String, password: String): User
+  users: [User]
+  article (batch: ID! order: ID! article: ID!): Article
+  articleFittings(batch: ID! order: ID! article: ID!): [Fitting]!
+  boxTypes: [Box]!
+  sortingPosition(group: String!, station: String!, position: Int!): SortingPosition!
+  sortingPositionByID(id: ID): SortingPosition!
+  sortingPositions(station: String): [SortingPosition]
+  isAssignedToStation(type: String!, id: ID!, station: String): Boolean
+}
+
+type Mutation {
+  generateData (batch: ID!): Boolean
+  deleteBatch (id: ID): Batch
+  addGroup (id: ID, group: GroupInput): Group
+  batch (batchComment: String, orders: [OrderInput], batchData: BatchInput): Batch
+  enrichBatch (batch: ID!): Boolean
+  updateBatchInfo (id: ID!, saw: String, orders: [OrderInput], machines: [String], batchComment: String, step: Int): Batch
+  # Boxes
+  addBoxType (box: BoxInput!): Box
+  deleteBoxType (name: String!): Box
+  editBoxType (name: String!, comment: String, weight: Float): Box
+  updateFittingBoxes (batch: ID! order: ID! article: ID!, boxes: [FittingBoxInput]!): [FittingBox]!
+  # Sortin Positions
+  addSortingPosition (sortingPosition: SortingPositionInput!): SortingPosition!
+  clearSortingPosition (id: ID!): Boolean
+  clearAllSortingPositionsFitting: Boolean
+  deleteSortingPosition (id: ID!): Boolean
+  assignToSortingPosition (reserveeBatch: String!, reservees: [ReserveeInput!], station: String!): SortingPosition!
+  assignSortingPositionToReservee (reservee: ReserveeInput!, positionID: ID!, positionStation: String!): Boolean
+  # User
+  addUser(user: UserInput!): User
+  editUser(id: ID!, user: UserInput!): User
+  deleteUser(id: ID!): Boolean
+}
+
+type Subscription {
+  batchCreated: ID
+  batchDataFetched: ID
+  batchStatusUpdated: Batch
+  batchInfoUpdated: Batch
+  batchEnriched: Batch
+  batchFrozen: Batch
+  groupAdded: Group
+  error: Error
+}
